@@ -1,15 +1,14 @@
 #include "dsw.h"
 
-#include <cstdlib> 
-#include <ctime>
-
 int main()
 {
     BST bst;
 
+    srand(time(nullptr));
+
     for (int i = 0; i < 20; i++)
     {
-        int value = std::rand() % 100;
+        int value = rand() % 100;
         bst.insert(value);
     }
 

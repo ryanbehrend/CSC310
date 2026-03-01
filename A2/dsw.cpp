@@ -44,7 +44,6 @@ int BST::subtreeSize(Node* root)
     return subtreeSize(root->left) + subtreeSize(root->right) + 1;
 }
 
-// Phase 1 - right skewed linked list tree
 void BST::createVine()
 {
     if (root == nullptr)
@@ -58,7 +57,7 @@ void BST::createVine()
 
     while (parent != nullptr)
     {
-        if (child != nullptr) // right chiles exists -> try to get rid of it
+        if (child != nullptr)
         {
             int size = subtreeSize(child);
 
@@ -85,7 +84,7 @@ void BST::createVine()
                 child = parent->left;
             }
         }
-        else // no right child
+        else
         {
             grandparent = parent;
             parent = parent->left;
@@ -109,15 +108,14 @@ void BST::rebuildTree(int size)
 
     for (int pass = 0; pass < passes; pass++)
     {
-        int count = size / (1 << (pass + 1)); // halve each pass like DSW
+        int count = size / (1 << (pass + 1));
         if (count < 1)
+        {
             break;
+        }
 
-        // Right rotation pass — compress left spine upward
         performRotation(count, "left");
 
-        // Every other pass, do a balancing left rotation pass
-        // to mix the structure and avoid total left skew
         if (pass % 2 == 1)
         {
             int lcount = count / 2;
@@ -143,7 +141,6 @@ void BST::performRotation(int count, string direction)
 
             Node *child = parent->left;
 
-            // rotate right
             parent->left = child->right;
             child->right = parent;
 
@@ -153,7 +150,7 @@ void BST::performRotation(int count, string direction)
                 grandparent->left = child;
 
             grandparent = child;
-            parent = child->right; // advance past rotated node
+            parent = child->right;
         }
     }
     else
@@ -165,7 +162,6 @@ void BST::performRotation(int count, string direction)
 
             Node *child = parent->right;
 
-            // rotate left
             parent->right = child->left;
             child->left = parent;
 

@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <math.h>
+#include <cstdlib> 
+#include <ctime>
 
 using namespace std;
 
@@ -25,19 +27,18 @@ class BST
     private:
         Node* root;
 
-        // Helper functions
         void rotateRight(Node*& node);
         void rotateLeft(Node*& node);
         int  subtreeSize(Node* root);
-        void createVine();  // Phase 1
-        void rebuildTree(int size);  // Phase 2
-        void performRotation(int count, string direction);  // helper for phase 2 (rebuildTree)
+        void createVine();
+        void rebuildTree(int size);
+        void performRotation(int count, string direction);
         void printTree(Node* root, int space);
 
     public:
         BST();
         ~BST();
-        // helper for the destructor
+
         void deleteTree(Node*& node);
 
         void insert(int val);
