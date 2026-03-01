@@ -1,4 +1,5 @@
 #include "dsw.h"
+#include "customErrorClass.h"  // bring in custom exception type
 
 // ----------------- PRIVATE ----------------------------------
 
@@ -16,6 +17,9 @@ void BST::rotateRight(Node*& node) // passing the parent
     node->left = leftChild->right;
     // 2) parent is going to be right child of node that is rotated
     leftChild->right = node;
+
+    updateSize(node);
+    updateSize(leftChild);
     
     node = leftChild;
 }
@@ -35,24 +39,37 @@ void BST::rotateLeft(Node*& node)
     // 2) parent is going to be left child of node that is rotated
     rightChild->left = node;
 
+    updateSize(node);
+    updateSize(rightChild);
+
     node = rightChild;
 }
 
-int BST::subtreeSize(Node* root)
+int BST::subtreeSize(Node* node)
 {
-    if (root == nullptr)
+    if (node == nullptr)
     {
         return 0;
     }
 
-    return subtreeSize(root->left) + subtreeSize(root->right) + 1;
+    return node->size;
+}
+
+void BST::updateSize(Node* node)
+{
+    if (node == nullptr)
+    {
+        return;
+    }
+
+    node->size = 1 + subtreeSize(node->left) + subtreeSize(node->right);
 }
 
 void BST::createVine()
 {
     if (root == nullptr)
     {
-        return;
+        throw MyException("createVine error: tree is empty");
     }
 
     Node* grandparent = nullptr;
@@ -102,11 +119,6 @@ void BST::createVine()
 
 void BST::rebuildTree(int size)
 {
-    if (size <= 1)
-    {
-        return;
-    }
-
     int h = (int)(2.0 * log2(size));
     int passes = h / 2;
 
@@ -133,6 +145,16 @@ void BST::rebuildTree(int size)
 
 void BST::performRotation(int count, string direction)
 {
+    if (count < 1)
+    {
+        throw MyException("performRotation error: count must be at least 1");
+    }
+
+    if (direction != "left" && direction != "right")
+    {
+        throw MyException(string("performRotation error: invalid direction"));
+    }
+
     Node *grandparent = nullptr;
     Node *parent = root;
 
@@ -149,6 +171,9 @@ void BST::performRotation(int count, string direction)
 
             parent->left = child->right;
             child->right = parent;
+
+            updateSize(parent);
+            updateSize(child);
 
             if (grandparent == nullptr)
             {
@@ -176,6 +201,9 @@ void BST::performRotation(int count, string direction)
 
             parent->right = child->left;
             child->left = parent;
+
+            updateSize(parent);
+            updateSize(child);
 
             if (grandparent == nullptr)
             {
@@ -256,6 +284,7 @@ void BST::insert(int val)
 
     while(curr != nullptr)
     {
+        curr->size++;
         parent = curr;
         if(val < curr->data)
         {

@@ -11,12 +11,14 @@ using namespace std;
 struct Node
 {
     int data;
+    int size;
     Node* left;
     Node* right;
 
     Node(int val)
     {
         data = val;
+        size = 1;
         left = nullptr;
         right = nullptr;
     }
@@ -29,7 +31,8 @@ class BST
 
         void rotateRight(Node*& node);
         void rotateLeft(Node*& node);
-        int  subtreeSize(Node* root);
+        int  subtreeSize(Node* node);
+        void updateSize(Node* node);
         void createVine();
         void rebuildTree(int size);
         void performRotation(int count, string direction);
