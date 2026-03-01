@@ -6,7 +6,9 @@
 void BST::rotateRight(Node*& node) // passing the parent
 {
     if(node == nullptr || node->left == nullptr)
+    {
         return;
+    }
     
     // get the node to rotate R
     Node* leftChild = node->left; 
@@ -22,7 +24,9 @@ void BST::rotateRight(Node*& node) // passing the parent
 void BST::rotateLeft(Node*& node)
 {
     if(node == nullptr || node->right == nullptr)
+    {
         return;
+    }
 
     // get the node to rotate L
     Node* rightChild = node->right;
@@ -137,7 +141,9 @@ void BST::performRotation(int count, string direction)
         for (int i = 0; i < count; i++)
         {
             if (parent == nullptr || parent->left == nullptr)
+            {
                 break;
+            }
 
             Node *child = parent->left;
 
@@ -145,9 +151,13 @@ void BST::performRotation(int count, string direction)
             child->right = parent;
 
             if (grandparent == nullptr)
+            {
                 root = child;
+            }
             else
+            {
                 grandparent->left = child;
+            }
 
             grandparent = child;
             parent = child->right;
@@ -158,7 +168,9 @@ void BST::performRotation(int count, string direction)
         for (int i = 0; i < count; i++)
         {
             if (parent == nullptr || parent->right == nullptr)
+            {
                 break;
+            }
 
             Node *child = parent->right;
 
@@ -166,9 +178,13 @@ void BST::performRotation(int count, string direction)
             child->left = parent;
 
             if (grandparent == nullptr)
+            {
                 root = child;
+            }
             else
+            {
                 grandparent->right = child;
+            }
 
             grandparent = child;
             parent = child->right;
@@ -179,7 +195,8 @@ void BST::performRotation(int count, string direction)
 void BST::printTree(Node* root, int space) {
     const int COUNT = 10; 
 
-    if (root == nullptr) {
+    if (root == nullptr)
+    {
         return;
     }
 
@@ -191,7 +208,8 @@ void BST::printTree(Node* root, int space) {
 
     // Print the current node after right child
 
-    for (int i = COUNT; i < space; i++) {
+    for (int i = COUNT; i < space; i++)
+    {
         cout << " "; // Indentation for tree depth
     }
     cout << root->data << endl;
@@ -214,7 +232,9 @@ BST::~BST()
 void BST::deleteTree(Node*& node)
 {
     if(node == nullptr)
+    {
         return;
+    }
     
     deleteTree(node->left);
     deleteTree(node->right);
@@ -225,7 +245,8 @@ void BST::deleteTree(Node*& node)
 void BST::insert(int val)
 {
     Node* newNode = new Node(val);
-    if(root == nullptr){
+    if(root == nullptr)
+    {
         root = newNode;
         return;
     }
@@ -237,15 +258,23 @@ void BST::insert(int val)
     {
         parent = curr;
         if(val < curr->data)
+        {
             curr = curr->left;
+        }
         else
+        {
             curr = curr->right;
+        }
     }
 
     if(val < parent->data)
+    {
         parent->left = newNode;
+    }
     else
+    {
         parent->right = newNode;
+    }
 }
 
 void BST::dswBalance()
@@ -257,8 +286,6 @@ void BST::dswBalance()
 
     // phase 1
     createVine();
-
-    
 
     cout << "After Phase 1:";
     display();
