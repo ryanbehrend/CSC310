@@ -17,8 +17,8 @@ customErrorClass.o: customErrorClass.cpp ${DEPS}
 customErrorHandling.o: customErrorHandling.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-dsw.o: rb.cpp ${DEPS}
+rb.o: rb.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-dsw: $(OBJS) main.cpp
+rb: $(OBJS) main.cpp
 	$(CC) -o $@ $(CFLAGS) $^ 
