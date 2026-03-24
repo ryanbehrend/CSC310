@@ -2,7 +2,7 @@
 
 // ++++++++++++++++++++++++++++++ PUBLIC +++++++++++++++++++++++++++++++++++++++
 
-RBTREE::RBTREE()
+LLRBTREE::LLRBTREE()
 {
     TNULL = new Node(0);
     TNULL->color = BLACK;
@@ -12,12 +12,12 @@ RBTREE::RBTREE()
     root = TNULL;
 }
 
-RBTREE::~RBTREE()
+LLRBTREE::~LLRBTREE()
 {
     deleteSubtree(root);
 }
 
-void RBTREE::insert(int key)
+void LLRBTREE::insert(int key)
 {
     Node* node = nullptr;
     node = new Node(key);
@@ -36,12 +36,12 @@ void RBTREE::insert(int key)
     insertFix(node);
 }
 
-void RBTREE::remove(int key)
+void LLRBTREE::remove(int key)
 {
     removeR(root, key);
 }
 
-void RBTREE::printTree()
+void LLRBTREE::printTree()
 {
     if(root == TNULL)
     {
@@ -53,7 +53,7 @@ void RBTREE::printTree()
 
 // ++++++++++++++++++++++++++++++ PRIVATE +++++++++++++++++++++++++++++++++++++++++++++
 
-void RBTREE::leftRotate(Node* y)
+void LLRBTREE::leftRotate(Node* y)
 {
     rotationCount++;
 
@@ -89,7 +89,7 @@ void RBTREE::leftRotate(Node* y)
     
 }
 
-void RBTREE::rightRotate(Node* y)
+void LLRBTREE::rightRotate(Node* y)
 {
     rotationCount++;
 
@@ -124,7 +124,7 @@ void RBTREE::rightRotate(Node* y)
     y->parent = x;
 }
 
-void RBTREE::insertR(Node*& root, Node*& node)
+void LLRBTREE::insertR(Node*& root, Node*& node)
 {
     if(root == TNULL)
     {
@@ -158,7 +158,7 @@ void RBTREE::insertR(Node*& root, Node*& node)
     }
 }
 
-void RBTREE::insertFix(Node* k)
+void LLRBTREE::insertFix(Node* k)
 {
     Node* uncle;
     
@@ -231,7 +231,7 @@ void RBTREE::insertFix(Node* k)
 }
 
 
-void RBTREE::removeR(Node*& node, int key)
+void LLRBTREE::removeR(Node*& node, int key)
 {
     if (node == TNULL)
     {
@@ -297,88 +297,114 @@ void RBTREE::removeR(Node*& node, int key)
     root->color = BLACK;
 }
 
-void RBTREE::deleteFix(Node* x)
+void LLRBTREE::deleteFix(Node* x)
 {
     Node* sibling;
 
     while (x != root && x->color == BLACK)
     {
-        if (x == x->parent->left) // if x is a left child
+        if (x->parent == nullptr)
+        {
+            break;
+        }
+
+        bool isLeft = (x == x->parent->left);
+        if (isLeft)
         {
             sibling = x->parent->right;
+        }
+        else
+        {
+            sibling = x->parent->left;
+        }
 
-            if (sibling->color == RED) // case 1
+        if (sibling == TNULL)
+        {
+            x = x->parent;
+            continue;
+        }
+
+        if (sibling->color == RED)
+        {
+            sibling->color = BLACK;
+            x->parent->color = RED;
+            if (isLeft)
             {
-                sibling->color = BLACK;
-                x->parent->color = RED;
                 leftRotate(x->parent);
-                sibling = x->parent->right;
             }
-            
-            if (sibling->left->color == BLACK && sibling->right->color == BLACK) // case 2
+            else
+            {
+                rightRotate(x->parent);
+            }
+
+            sibling = isLeft ? x->parent->right : x->parent->left;
+        }
+
+        if ((sibling->left == TNULL || sibling->left->color == BLACK) &&
+            (sibling->right == TNULL || sibling->right->color == BLACK))
+        {
+            if (sibling != TNULL)
             {
                 sibling->color = RED;
-                x = x->parent;
-            }  
-            else // cases 3 and 4
+            }
+            x = x->parent;
+        }
+        else
+        {
+            if (isLeft)
             {
-                if (sibling->right->color == BLACK) // case 3
+                if (sibling->right == TNULL || sibling->right->color == BLACK)
                 {
-                    sibling->left->color = BLACK;
+                    if (sibling->left != TNULL)
+                    {
+                        sibling->left->color = BLACK;
+                    }
                     sibling->color = RED;
                     rightRotate(sibling);
                     sibling = x->parent->right;
                 }
 
-                // case 4
                 sibling->color = x->parent->color;
                 x->parent->color = BLACK;
-                sibling->right->color = BLACK;
+                if (sibling->right != TNULL)
+                {
+                    sibling->right->color = BLACK;
+                }
                 leftRotate(x->parent);
                 x = root;
             }
-        }
-        else // if x is a right child
-        {
-            sibling = x->parent->left;
-
-            if (sibling->color == RED) // case 1
+            else
             {
-                sibling->color = BLACK;
-                x->parent->color = RED;
-                rightRotate(x->parent);
-                sibling = x->parent->left;
-            }
-
-            if (sibling->left->color == BLACK && sibling->right->color == BLACK) // case 2
-            {
-                sibling->color = RED;
-                x = x->parent;
-            }
-            else // cases 3 and 4
-            {
-                if (sibling->right->color == BLACK) // case 3
+                if (sibling->left == TNULL || sibling->left->color == BLACK) // case 3
                 {
-                    sibling->left->color = BLACK;
+                    if (sibling->right != TNULL)
+                    {
+                        sibling->right->color = BLACK;
+                    }
                     sibling->color = RED;
                     leftRotate(sibling);
                     sibling = x->parent->left;
                 }
 
-                // case 4
                 sibling->color = x->parent->color;
                 x->parent->color = BLACK;
-                sibling->right->color = BLACK;
+                if (sibling->left != TNULL)
+                {
+                    sibling->left->color = BLACK;
+                }
                 rightRotate(x->parent);
                 x = root;
             }
         }
     }
 
-    x->color = BLACK;
+    if (x != TNULL)
+    {
+        x->color = BLACK;
+    }
 }
 
-void RBTREE::transplant(Node*& u, Node*& v)
+void LLRBTREE::transplant(Node*& u, Node*& v)
 {
     if (u->parent == nullptr)
     {
@@ -393,13 +419,10 @@ void RBTREE::transplant(Node*& u, Node*& v)
         u->parent->right = v;
     }
 
-    if(v != TNULL)
-    {
-        v->parent = u->parent;
-    }
+    v->parent = u->parent;
 }
 
-Node* RBTREE::successor(Node* node)
+Node* LLRBTREE::successor(Node* node)
 {
     if (node == TNULL) 
     {
@@ -414,7 +437,7 @@ Node* RBTREE::successor(Node* node)
     return node;
 }
 
-void RBTREE::deleteSubtree(Node* node)
+void LLRBTREE::deleteSubtree(Node* node)
 {
     if (node != TNULL)
     {
@@ -425,7 +448,7 @@ void RBTREE::deleteSubtree(Node* node)
 }
 
 
-void RBTREE::print(Node* root, int space )
+void LLRBTREE::print(Node* root, int space )
 {
     if (root == TNULL || root == nullptr)
     {

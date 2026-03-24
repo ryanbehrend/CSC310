@@ -1,5 +1,5 @@
-#ifndef RBTREE_H
-#define RBTREE_H
+#ifndef LLRBTREE_H
+#define LLRBTREE_H
 
 #include <iostream>
 
@@ -33,7 +33,7 @@ struct Node
     }
 };
 
-class RBTREE
+class LLRBTREE
 {
     private:
         Node* root;
@@ -54,8 +54,8 @@ class RBTREE
         void print(Node* root, int space);
 
     public:
-        RBTREE();
-        ~RBTREE();
+        LLRBTREE();
+        ~LLRBTREE();
 
         void insert(int key);
         void remove(int key);
