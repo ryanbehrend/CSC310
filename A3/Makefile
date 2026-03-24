@@ -1,15 +1,15 @@
 CC 			 := g++
 CFLAGS 		 := -Wall -std=c++11
 
-OBJS 		 := customErrorClass.o rb.o
-DEPS 		 := customErrorClass.h rb.h
+OBJS 		 := customErrorClass.o LLRB.o
+DEPS 		 := customErrorClass.h LLRB.h
 
 .PHONY: clean all
 
-all: rb
+all: LLRB
 
 clean:
-	rm $(OBJS) rb
+	rm $(OBJS) LLRB
 
 customErrorClass.o: customErrorClass.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
@@ -17,8 +17,8 @@ customErrorClass.o: customErrorClass.cpp ${DEPS}
 customErrorHandling.o: customErrorHandling.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-rb.o: rb.cpp ${DEPS}
+LLRB.o: LLRB.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-rb: $(OBJS) main.cpp
+LLRB: $(OBJS) mainLLRB.cpp
 	$(CC) -o $@ $(CFLAGS) $^ 
