@@ -17,19 +17,15 @@ struct Node
 {
     int data;
     Color color;
-
     Node* left;
     Node* right;
-    Node* parent;
 
     Node(int key)
     {
         data = key;
         color = RED;
-
         left = nullptr;
         right = nullptr;
-        parent = nullptr;
     }
 };
 
@@ -37,18 +33,15 @@ class LLRBTREE
 {
     private:
         Node* root;
-        Node* TNULL; // for NIL nodes
+        Node* TNULL;
 
-        void leftRotate(Node* y);
-        void rightRotate(Node* y);
+        void leftRotate(Node*& node);
+        void rightRotate(Node*& node);
 
-        void insertR(Node*& root, Node*& node);
-        void insertFix(Node* k);
-        
-        void removeR(Node*& node, int key);
-        void deleteFix(Node* x);
-        void transplant(Node*& u, Node*& v);
-        Node* successor(Node* node);
+        bool isRed(Node* node);
+        void flipColor(Node* node);
+
+        void insert(Node*& node, int data);
 
         void deleteSubtree(Node* node);
         void print(Node* root, int space);
@@ -57,9 +50,7 @@ class LLRBTREE
         LLRBTREE();
         ~LLRBTREE();
 
-        void insert(int key);
-        void remove(int key);
-
+        void insert(int data);
         void printTree();
 
         int rotationCount = 0;

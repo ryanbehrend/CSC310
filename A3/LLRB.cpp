@@ -1,4 +1,5 @@
 #include "LLRB.h"
+#include "customErrorClass.h"
 
 // ++++++++++++++++++++++++++++++ PUBLIC +++++++++++++++++++++++++++++++++++++++
 
@@ -17,28 +18,14 @@ LLRBTREE::~LLRBTREE()
     deleteSubtree(root);
 }
 
-void LLRBTREE::insert(int key)
+void LLRBTREE::insert(int data)
 {
-    Node* node = nullptr;
-    node = new Node(key);
+    insert(root, data);
 
-    node->left  = TNULL;
-    node->right = TNULL;
-
-    if (root == TNULL)
+    if (root != TNULL)
     {
-        root = node;
         root->color = BLACK;
-        return;
     }
-
-    insertR(root, node);
-    insertFix(node);
-}
-
-void LLRBTREE::remove(int key)
-{
-    removeR(root, key);
 }
 
 void LLRBTREE::printTree()
@@ -53,180 +40,139 @@ void LLRBTREE::printTree()
 
 // ++++++++++++++++++++++++++++++ PRIVATE +++++++++++++++++++++++++++++++++++++++++++++
 
-void LLRBTREE::leftRotate(Node* y)
+void LLRBTREE::leftRotate(Node*& node)
 {
+    // exeption handling
+    if (node == nullptr || node == TNULL)
+    {
+        throw MyException("Cannot rotate a null node");
+    }
+    if (node->right == nullptr || node->right == TNULL)
+    {
+        throw MyException("Node has no right child to rotate");
+    }
+
+    // rotate node and update colors
+    Node* x = node->right;
+    node->right = x->left;
+    x->left = node;
+    x->color = node->color;
+    node->color = RED;
+    node = x;
+
     rotationCount++;
+}
 
-    Node* x = y->right;
-    if (x == TNULL || x == nullptr)
+void LLRBTREE::rightRotate(Node*& node)
+{
+    // exeption handling
+    if (node == nullptr || node == TNULL)
     {
-        return;  // Prevent invalid rotation
+        throw MyException("Cannot rotate a null node");
     }
-    y->right = x->left;  // adoption
+    if (node->left == nullptr || node->left == TNULL)
+    {
+        throw MyException("Node has no left child to rotate");
+    }
 
-    if (x->left != TNULL) // updating parent of adopted left child
+    // rotate node and update colors
+    Node* x = node->left;
+    node->left = x->right;
+    x->right = node;
+    x->color = node->color;
+    node->color = RED;
+    node = x;
+
+    rotationCount++;
+}
+
+bool LLRBTREE::isRed(Node* node)
+{
+    if (node == nullptr || node == TNULL || node->color == BLACK)
     {
-        x->left->parent = y; 
+        return false;
+    }
+    return true;
+}
+
+void LLRBTREE::flipColor(Node* node)
+{
+    // exception handling
+    if (node == nullptr || node == TNULL)
+    {
+        throw MyException("Cannot flip colors on a null node");
     }
 
-    // update parent of x
-    x->parent = y->parent;
-    if (y->parent == nullptr)
+    // flip parent
+    if (node->color == RED)
     {
-        root = x;
-    }
-    else if (y == y->parent->left)
-    {
-        y->parent->left = x;
+        node->color = BLACK;
     }
     else
     {
-        y->parent->right = x;
+        node->color = RED;
     }
 
-    x->left = y;
-    y->parent = x;
-    
+    // flip left child
+    if (node->left != TNULL)
+    {
+        if (node->left->color == RED)
+        {
+            node->left->color = BLACK;
+        }
+        else
+        {
+            node->left->color = RED;
+        }
+    }
+
+    // flip right child
+    if (node->right != TNULL)
+    {
+        if (node->right->color == RED)
+        {
+            node->right->color = BLACK;
+        }
+        else
+        {
+            node->right->color = RED;
+        }
+    }
 }
 
-void LLRBTREE::rightRotate(Node* y)
+void LLRBTREE::insert(Node*& node, int data)
 {
-    rotationCount++;
-
-    Node* x = y->left;
-    if (x == TNULL || x == nullptr)
+    if (node == TNULL)
     {
-        return;  // Prevent invalid rotation
-    }
-    y->left = x->right;  // adoption
-
-    if(x->right != TNULL) // updating parent of adopted left child
-    {
-        x->right->parent = y; 
-    }
-
-    // update parent of x
-    x->parent = y->parent;
-    if(y->parent == nullptr)
-    {
-        root = x;
-    }
-    else if(y == y->parent->left)
-    {
-        y->parent->left = x;
-    }
-    else
-    {
-        y->parent->right = x;
-    }
-
-    x->right = y;
-    y->parent = x;
-}
-
-void LLRBTREE::insertR(Node*& root, Node*& node)
-{
-    if(root == TNULL)
-    {
-        root = node;
+        node = new Node(data);
+        node->left = TNULL;
+        node->right = TNULL;
         return;
     }
 
-    if(node->data < root->data)
+    if (data < node->data)
     {
-        if(root->left == TNULL)
-        {
-            root->left = node;
-            node->parent = root;
-        }
-        else
-        {
-            insertR(root->left, node);
-        }
+        insert(node->left, data);
     }
-    else
+    else if (data > node->data)
     {
-        if(root->right == TNULL)
-        {
-            root->right = node;
-            node->parent = root;
-        }
-        else
-        {
-            insertR(root->right, node);
-        }
-    }
-}
-
-void LLRBTREE::insertFix(Node* k)
-{
-    Node* uncle;
-    
-    // property 3 violation - when parent is red
-    while(k != root && k->parent->color == RED)
-    {
-        if (k->parent == k->parent->parent->right) // parent is right child
-        {
-            uncle = k->parent->parent->left;
-
-            if (uncle->color == RED) // CASE 2 - Red Uncle
-            {
-                uncle->color = BLACK;
-                k->parent->color = BLACK;
-                k->parent->parent->color = RED;
-
-                // update k to move up the tree
-                k = k->parent->parent;
-            }
-            else // CASE 3 or 4 - Black Uncle
-            {
-                if (k == k->parent->left) // CASE 3 - Triangle case
-                {
-                    k = k->parent;
-                    rightRotate(k);
-                }
-
-                // CASE 4
-                k->parent->color = BLACK;
-                k->parent->parent->color = RED;
-                leftRotate(k->parent->parent);
-            }
-        }
-        else if (k->parent == k->parent->parent->left) // parent is left child
-        {
-            uncle = k->parent->parent->right;
-
-            if (uncle->color == RED) // CASE 2 - Red Uncle
-            {
-                uncle->color = BLACK;
-                k->parent->color = BLACK;
-                k->parent->parent->color = RED;
-
-                // update k to move up the tree
-                k = k->parent->parent;
-            }
-            else // CASE 3 or 4 - Black Uncle
-            {
-                if (k == k->parent->right) // CASE 3 - Triangle case
-                {
-                    k = k->parent;
-                    leftRotate(k);
-                }
-
-                // CASE 4
-                k->parent->color = BLACK;
-                k->parent->parent->color = RED;
-                rightRotate(k->parent->parent);
-            }
-        }
-
-        if (k == root)
-        {
-            break;
-        }
+        insert(node->right, data);
     }
 
-    root->color = BLACK;
+    if (isRed(node->right) && !isRed(node->left))
+    {
+        leftRotate(node);
+    }
+
+    if (isRed(node->left) && isRed(node->left->left))
+    {
+        rightRotate(node);
+    }
+
+    if (isRed(node->left) && isRed(node->right))
+    {
+        flipColor(node);
+    }
 }
 
 void LLRBTREE::deleteSubtree(Node* node)
