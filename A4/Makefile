@@ -1,8 +1,8 @@
 CC 			 := g++
 CFLAGS 		 := -Wall -std=c++11
 
-OBJS 		 := customErrorClass.o hash.o
-DEPS 		 := customErrorClass.h hash.h
+OBJS 		 := customErrorClass.o hash.o AVL/avl.o
+DEPS 		 := customErrorClass.h hash.h AVL/avl.h
 
 .PHONY: clean all
 
@@ -18,6 +18,9 @@ customErrorHandling.o: customErrorHandling.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 hash.o: hash.cpp ${DEPS}
+	$(CC) -c -o $@ $(CFLAGS) $<
+
+AVL/avl.o: AVL/avl.cpp AVL/avl.h
 	$(CC) -c -o $@ $(CFLAGS) $<
 
 hash: $(OBJS) mainHash.cpp
