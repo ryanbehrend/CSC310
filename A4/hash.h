@@ -25,6 +25,18 @@ enum CollisionHandling
 
 class HashTable
 {
+public:
+    HashTable(int size, CollisionHandling variant);
+    ~HashTable();
+
+    void insert(const string &key, int value);
+    bool search(const string &key, int &value); // COMPLETE THIS
+    bool remove(const string &key);             // COMPLETE THIS
+
+    // Benchmark and Display
+    void benchmarkHashTable(HashTable &table, const vector<pair<string, int>> &data, int numSearch, int numDelete);
+    void displayStats();
+
 private:
     int tableSize;
     int elementCount;
@@ -39,24 +51,12 @@ private:
     // Hash Functions and Collision Handling
     int hash1(const string &key) const;
     int hash2(const string &key) const;
-    int probe(int index, int i) const; // COMPLETE THIS
-    void rehash();                     // COMPLETE THIS
+    int probe(int index, int i, const string &key) const;
+    void rehash(); // COMPLETE THIS
 
     // Helper functions
-    int findEmptySlot(const string &key); // COMPLETE THIS
-    void resizeIfNeeded();                // COMPLETE THIS
-
-public:
-    HashTable(int size, CollisionHandling variant);
-    ~HashTable();
-
-    void insert(const string &key, int value);  // COMPLETE THIS
-    bool search(const string &key, int &value); // COMPLETE THIS
-    bool remove(const string &key);             // COMPLETE THIS
-
-    // Benchmark and Display
-    void benchmarkHashTable(HashTable &table, const vector<pair<string, int>> &data, int numSearch, int numDelete);
-    void displayStats();
+    int findEmptySlot(const string &key);
+    void resizeIfNeeded();
 };
 
 vector<pair<string, int>> readDataFromFile(const string &filename);

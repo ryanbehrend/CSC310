@@ -1,5 +1,7 @@
 #include "hash.h"
 
+// Public Functions
+
 // Constructor - initializing table based on chosen hash table variant
 HashTable::HashTable(int size, CollisionHandling variant)
 {
@@ -27,42 +29,6 @@ HashTable::HashTable(int size, CollisionHandling variant)
 
 HashTable::~HashTable() {}
 
-int HashTable::hash1(const string &key) const
-{
-    unsigned long hash = 0;
-    for (char c : key)
-    {
-        hash = (hash * 31 + c);
-    }
-    return hash % tableSize;
-}
-
-int HashTable::hash2(const string &key) const
-{
-    unsigned long hash = 5381;
-    for (char c : key)
-    {
-        hash = ((hash << 5) + hash) + c;
-    }
-    return 1 + (hash % (tableSize - 1));
-}
-
-// complete this
-int HashTable::probe(int index, int i) const
-{
-    switch (method)
-    {
-    case LINEAR_PROBING:
-        // complete this
-    case QUADRATIC_PROBING:
-        // complete this
-    case DOUBLE_HASHING:
-        // complete this
-    default:
-        return index;
-    }
-}
-
 void HashTable::insert(const string &key, int value)
 {
     resizeIfNeeded();
@@ -83,51 +49,61 @@ void HashTable::insert(const string &key, int value)
         break;
 
     case CHAINING_LIST:
-        // complete this
+        for (auto &pair : tableList[index])
+        {
+            if (pair.first == key)
+            {
+                pair.second = value;
+                return;
+            }
+        }
+        tableList[index].push_back({key, value});
         break;
 
     case CHAINING_BST:
-        // complete this - use AVL insert method
+    {
+        int existingValue;
+
+        if (tableBST[index].search(key, existingValue))
+        {
+            tableBST[index].insert(key, value);
+            return;
+        }
+        tableBST[index].insert(key, value);
         break;
+    }
 
     case LINEAR_PROBING:
     case QUADRATIC_PROBING:
     case DOUBLE_HASHING:
-        // complete this
+    {
+        int pos = findEmptySlot(key);
+        if (pos < 0)
+        {
+            return;
+        }
+
+        if (tableProbing[pos].first.empty())
+        {
+            tableProbing[pos] = {key, value};
+        }
+        else
+        {
+            tableProbing[pos].second = value;
+            return;
+        }
         break;
+    }
     }
     elementCount++;
 }
 
 bool HashTable::search(const string &key, int &value)
 {
-    // complete this
 }
 
 bool HashTable::remove(const string &key)
 {
-    // complete this
-}
-
-// Function to read data from file
-vector<pair<string, int>> readDataFromFile(const string &filename)
-{
-    vector<pair<string, int>> data;
-    ifstream file(filename);
-    string key;
-    int value;
-    if (!file)
-    {
-        cerr << "Error reading file: " << filename << endl;
-        return data;
-    }
-    while (file >> key >> value)
-    {
-        data.push_back({key, value});
-    }
-
-    file.close();
-    return data;
 }
 
 // Benchmark function for custom HashTable
@@ -186,6 +162,7 @@ void HashTable::displayStats()
             totalElements += bucket.size();
         }
         break;
+
     case CHAINING_LIST:
         for (const auto &bucket : tableList)
         {
@@ -195,6 +172,7 @@ void HashTable::displayStats()
             totalElements += bucket.size();
         }
         break;
+
     case CHAINING_BST:
         for (const auto &bucket : tableBST)
         {
@@ -210,6 +188,7 @@ void HashTable::displayStats()
             }
         }
         break;
+
     case LINEAR_PROBING:
     case QUADRATIC_PROBING:
     case DOUBLE_HASHING:
@@ -232,20 +211,112 @@ void HashTable::displayStats()
     }
 }
 
+// Private Functions
+
+int HashTable::hash1(const string &key) const
+{
+    unsigned long hash = 0;
+    for (char c : key)
+    {
+        hash = (hash * 31 + c);
+    }
+    return hash % tableSize;
+}
+
+int HashTable::hash2(const string &key) const
+{
+    unsigned long hash = 5381;
+    for (char c : key)
+    {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return 1 + (hash % (tableSize - 1));
+}
+
+int HashTable::probe(int index, int i, const string &key) const
+{
+    switch (method)
+    {
+    case LINEAR_PROBING:
+        return (index + i) % tableSize;
+
+    case QUADRATIC_PROBING:
+        return (index + i * i) % tableSize;
+
+    case DOUBLE_HASHING:
+        return ((long long)index + (long long)i * hash2(key)) % tableSize;
+
+    default:
+        return index;
+    }
+}
+
 void HashTable::rehash()
 {
-    // complete this
+}
+
+// Function to read data from file
+vector<pair<string, int>> readDataFromFile(const string &filename)
+{
+    vector<pair<string, int>> data;
+    ifstream file(filename);
+    string key;
+    int value;
+    if (!file)
+    {
+        cerr << "Error reading file: " << filename << endl;
+        return data;
+    }
+    while (file >> key >> value)
+    {
+        data.push_back({key, value});
+    }
+
+    file.close();
+    return data;
 }
 
 int HashTable::findEmptySlot(const string &key)
 {
-    // complete this
+    int index = hash1(key);
+
+    for (int i = 0; i < tableSize; ++i)
+    {
+        int pos = probe(index, i, key);
+
+        if (tableProbing[pos].first.empty() || tableProbing[pos].first == key)
+        {
+            return pos;
+        }
+    }
+
+    return -1;
 }
 
-// try experimenting with different thresholds for each technique
 void HashTable::resizeIfNeeded()
 {
-    // complete this
+    double loadFactor = (double)elementCount / tableSize;
+    double threshold;
+
+    switch (method)
+    {
+    case CHAINING_VECTOR:
+    case CHAINING_LIST:
+    case CHAINING_BST:
+        threshold = 0.9;
+        break;
+
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+        threshold = 0.6;
+        break;
+    }
+
+    if (loadFactor > threshold)
+    {
+        rehash();
+    }
 }
 
 // Benchmark function for built-in hash table in C++
