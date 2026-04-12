@@ -30,8 +30,8 @@ public:
     ~HashTable();
 
     void insert(const string &key, int value);
-    bool search(const string &key, int &value); // COMPLETE THIS
-    bool remove(const string &key);             // COMPLETE THIS
+    bool search(const string &key, int &value);
+    bool remove(const string &key);
 
     // Benchmark and Display
     void benchmarkHashTable(HashTable &table, const vector<pair<string, int>> &data, int numSearch, int numDelete);
@@ -52,7 +52,7 @@ private:
     int hash1(const string &key) const;
     int hash2(const string &key) const;
     int probe(int index, int i, const string &key) const;
-    void rehash(); // COMPLETE THIS
+    void rehash();
 
     // Helper functions
     int findEmptySlot(const string &key);

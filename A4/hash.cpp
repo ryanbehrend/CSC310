@@ -100,10 +100,109 @@ void HashTable::insert(const string &key, int value)
 
 bool HashTable::search(const string &key, int &value)
 {
+    int index = hash1(key);
+
+    switch (method)
+    {
+    case CHAINING_VECTOR:
+        for (const auto &pair : tableVector[index])
+        {
+            if (pair.first == key)
+            {
+                value = pair.second;
+                return true;
+            }
+        }
+        return false;
+
+    case CHAINING_LIST:
+        for (const auto &pair : tableList[index])
+        {
+            if (pair.first == key)
+            {
+                value = pair.second;
+                return true;
+            }
+        }
+        return false;
+
+    case CHAINING_BST:
+        return tableBST[index].search(key, value);
+
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+        int pos = findEmptySlot(key);
+
+        if (pos < 0)
+        {
+            return false;
+        }
+
+        if (tableProbing[pos].first == key)
+        {
+            value = tableProbing[pos].second;
+            return true;
+        }
+
+        return false;
+    }
+
+    return false;
 }
 
 bool HashTable::remove(const string &key)
 {
+    int index = hash1(key);
+
+    switch (method)
+    {
+    case CHAINING_VECTOR:
+        for (auto it = tableVector[index].begin(); it != tableVector[index].end(); ++it)
+        {
+            if (it->first == key)
+            {
+                tableVector[index].erase(it);
+                elementCount--;
+                return true;
+            }
+        }
+        return false;
+
+    case CHAINING_LIST:
+        for (auto it = tableList[index].begin(); it != tableList[index].end(); ++it)
+        {
+            if (it->first == key)
+            {
+                tableList[index].erase(it);
+                elementCount--;
+                return true;
+            }
+        }
+        return false;
+
+    case CHAINING_BST:
+        if (tableBST[index].remove(key))
+        {
+            elementCount--;
+            return true;
+        }
+        return false;
+
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+        int pos = findEmptySlot(key);
+        if (pos >= 0 && tableProbing[pos].first == key)
+        {
+            tableProbing[pos] = {"", 0}; // Clear the entry
+            elementCount--;
+            return true;
+        }
+        return false;
+    }
+
+    return false;
 }
 
 // Benchmark function for custom HashTable
@@ -253,6 +352,92 @@ int HashTable::probe(int index, int i, const string &key) const
 
 void HashTable::rehash()
 {
+    int newSize = tableSize * 2;
+
+    vector<vector<pair<string, int>>> oldTableVector;
+    vector<list<pair<string, int>>> oldTableList;
+    vector<AVLTree> oldTableBST;
+    vector<pair<string, int>> oldTableProbing;
+
+    switch (method)
+    {
+    case CHAINING_VECTOR:
+        oldTableVector = std::move(tableVector);
+        tableVector.resize(newSize);
+        break;
+
+    case CHAINING_LIST:
+        oldTableList = std::move(tableList);
+        tableList.resize(newSize);
+        break;
+
+    case CHAINING_BST:
+        oldTableBST = std::move(tableBST);
+        tableBST.resize(newSize);
+        break;
+
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+        oldTableProbing = std::move(tableProbing);
+        tableProbing.resize(newSize);
+        break;
+    }
+
+    int oldElementCount = elementCount;
+    elementCount = 0;
+    tableSize = newSize;
+
+    switch (method)
+    {
+    case CHAINING_VECTOR:
+        for (const auto &bucket : oldTableVector)
+        {
+            for (const auto &pair : bucket)
+            {
+                insert(pair.first, pair.second);
+            }
+        }
+        break;
+
+    case CHAINING_LIST:
+        for (const auto &bucket : oldTableList)
+        {
+            for (const auto &pair : bucket)
+            {
+                insert(pair.first, pair.second);
+            }
+        }
+        break;
+
+    case CHAINING_BST:
+        for (const auto &bucket : oldTableBST)
+        {
+            vector<pair<string, int>> elements = bucket.inOrderTraversal();
+            for (const auto &pair : elements)
+            {
+                insert(pair.first, pair.second);
+            }
+        }
+        break;
+
+    case LINEAR_PROBING:
+    case QUADRATIC_PROBING:
+    case DOUBLE_HASHING:
+        for (const auto &entry : oldTableProbing)
+        {
+            if (!entry.first.empty())
+            {
+                insert(entry.first, entry.second);
+            }
+        }
+        break;
+    }
+
+    if (elementCount != oldElementCount)
+    {
+        elementCount = oldElementCount;
+    }
 }
 
 // Function to read data from file
