@@ -1,10 +1,15 @@
 Analysis:
 
-For the No Collision dataset, the three chaning methods were provided very similar timings for insertion and search. The two open addressing methods were significantly faster, taking about 120 microseconds less time. And the last method, double hashing was slower than both of those at 207 microseconds for insertion and 79 microseconds for search.
+For the No Collision dataset, the three chaning methods were provided very similar timings for insertion and search.
+The two open addressing methods were significantly faster, taking about 120 microseconds less time.
+And the last method, double hashing was slower than both of those at 207 microseconds for insertion and 79 microseconds for search.
 
 For the Low Collision dataset, all the collision handling methods show very similar results as the No Collision dataset.
 
-For the High Collision dataset, the three chaning methods imporved slightly, with fewer empty buckets meaning better memory locality. The fourth method, linear probing, slowed the most due to clustering causing every operation to probe through long runs of keys. The fifth method, quadratic probing, stay similar to before, meaning inceasing the choses index in a quadratic manner works much better than linearly. Finally, the fifth method saw some small improvements in speed.
+For the High Collision dataset, the three chaning methods imporved slightly, with fewer empty buckets meaning better memory locality.
+The fourth method, linear probing, slowed the most due to clustering causing every operation to probe through long runs of keys.
+The fifth method, quadratic probing, stay similar to before, meaning inceasing the choses index in a quadratic manner works much better than linearly.
+Finally, the fifth method saw some small improvements in speed.
 
 Output:
 
