@@ -1,8 +1,6 @@
 #ifndef BINOMIAL_HEAP_H
 #define BINOMIAL_HEAP_H
 
-#include <customErrorClass.h>
-
 #include <iostream>
 #include <iomanip>
 
@@ -27,6 +25,7 @@ private:
     binomialNode *unionHeap(binomialNode *heap1, binomialNode *heap2);
     binomialNode *mergeTrees(binomialNode *tree1, binomialNode *tree2);
     void linkTrees(binomialNode *&prev, binomialNode *&cur, binomialNode *&next);
+    binomialNode *search(binomialNode *node, int key);
 
 public:
     BinomialHeap();
@@ -36,8 +35,8 @@ public:
     int findMin();
 
     int deleteMin();
-    bool decreaseKey(int oldKey, int newKey);
     bool deleteKey(int key);
+    bool decreaseKey(int oldKey, int newKey);
 
     void printHeap();
     void printTree(binomialNode *node, int space);

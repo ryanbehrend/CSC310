@@ -1,4 +1,5 @@
 #include "binomial.h"
+#include "customErrorClass.h"
 
 binomialNode::binomialNode(int k)
 {
@@ -92,6 +93,23 @@ void BinomialHeap::linkTrees(binomialNode *&prev, binomialNode *&curr, binomialN
     }
 }
 
+binomialNode *BinomialHeap::search(binomialNode *node, int key)
+{
+    if (!node)
+        return nullptr;
+
+    if (node->key == key)
+        return node;
+
+    // Check siblings
+    binomialNode *found = search(node->sibling, key);
+    if (found)
+        return found;
+
+    // Check children
+    return search(node->child, key);
+}
+
 // ---------------- PUBLIC FUNCTIONS ------------------------------ //
 
 BinomialHeap::BinomialHeap()
@@ -169,14 +187,161 @@ int BinomialHeap::findMin()
 
 int BinomialHeap::deleteMin()
 {
-}
+    if (!head)
+    {
+        throw MyException("can not delete from an empty heap");
+    }
 
-bool BinomialHeap::decreaseKey(int oldKey, int newKey)
-{
+    binomialNode *curr = head;
+    binomialNode *prev = nullptr;
+    binomialNode *currMin = head;
+    binomialNode *prevMin = nullptr;
+
+    while (curr->sibling)
+    {
+        if (curr->sibling->key < currMin->key)
+        {
+            currMin = curr->sibling;
+            prevMin = curr;
+        }
+        prev = curr;
+        curr = curr->sibling;
+    }
+
+    int minKey = currMin->key;
+
+    if (!prevMin)
+    {
+        head = currMin->sibling;
+    }
+    else
+    {
+        prevMin->sibling = currMin->sibling;
+    }
+
+    binomialNode *newHead = nullptr;
+    binomialNode *child = currMin->child;
+
+    while (child)
+    {
+        binomialNode *next = child->sibling;
+        child->sibling = newHead;
+        child->parent = nullptr;
+        newHead = child;
+        child = next;
+    }
+
+    head = unionHeap(head, newHead);
+
+    if (head && head->sibling)
+    {
+        binomialNode *prev = nullptr;
+        binomialNode *curr = head;
+        binomialNode *next = curr->sibling;
+
+        while (next)
+        {
+            linkTrees(prev, curr, next);
+            next = curr->sibling;
+        }
+    }
+
+    delete currMin;
+    return minKey;
 }
 
 bool BinomialHeap::deleteKey(int key)
 {
+    if (!head)
+    {
+        throw MyException("can not delete from an empty heap");
+    }
+
+    binomialNode *curr = head;
+    binomialNode *prev = nullptr;
+    binomialNode *nodeToDelete = nullptr;
+    binomialNode *prevNode = nullptr;
+
+    while (curr)
+    {
+        if (curr->key == key)
+        {
+            nodeToDelete = curr;
+            prevNode = prev;
+            break;
+        }
+        prev = curr;
+        curr = curr->sibling;
+    }
+
+    if (!nodeToDelete)
+    {
+        return false;
+    }
+
+    if (!prevNode)
+    {
+        head = nodeToDelete->sibling;
+    }
+    else
+    {
+        prevNode->sibling = nodeToDelete->sibling;
+    }
+
+    binomialNode *newHead = nullptr;
+    binomialNode *child = nodeToDelete->child;
+
+    while (child)
+    {
+        binomialNode *next = child->sibling;
+        child->sibling = newHead;
+        child->parent = nullptr;
+        newHead = child;
+        child = next;
+    }
+
+    head = unionHeap(head, newHead);
+
+    if (head && head->sibling)
+    {
+        binomialNode *prev = nullptr;
+        binomialNode *curr = head;
+        binomialNode *next = curr->sibling;
+
+        while (next)
+        {
+            linkTrees(prev, curr, next);
+            next = curr->sibling;
+        }
+    }
+
+    delete nodeToDelete;
+    return true;
+}
+
+bool BinomialHeap::decreaseKey(int oldKey, int newKey)
+{
+    binomialNode *target = search(head, oldKey);
+
+    if (!target)
+    {
+        return false;
+    }
+
+    if (newKey >= oldKey)
+    {
+        throw MyException("the new key must be smaller than the old key");
+    }
+
+    target->key = newKey;
+
+    while (target->parent && target->key < target->parent->key)
+    {
+        swap(target->key, target->parent->key);
+        target = target->parent;
+    }
+
+    return true;
 }
 
 void BinomialHeap::printHeap()
