@@ -1,15 +1,15 @@
 CC 			 := g++
 CFLAGS 		 := -Wall -std=c++11
 
-OBJS 		 := customErrorClass.o hash.o AVL/avl.o
-DEPS 		 := customErrorClass.h hash.h AVL/avl.h
+OBJS 		 := customErrorClass.o binomial.o
+DEPS 		 := customErrorClass.h binomial.h
 
 .PHONY: clean all
 
-all: hash
+all: binomial
 
 clean:
-	rm $(OBJS) hash
+	rm $(OBJS) binomial
 
 customErrorClass.o: customErrorClass.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
@@ -17,11 +17,8 @@ customErrorClass.o: customErrorClass.cpp ${DEPS}
 customErrorHandling.o: customErrorHandling.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-hash.o: hash.cpp ${DEPS}
+binomial.o: binomial.cpp ${DEPS}
 	$(CC) -c -o $@ $(CFLAGS) $<
 
-AVL/avl.o: AVL/avl.cpp AVL/avl.h
-	$(CC) -c -o $@ $(CFLAGS) $<
-
-hash: $(OBJS) mainHash.cpp
+binomial: $(OBJS) main.cpp
 	$(CC) -o $@ $(CFLAGS) $^ 
