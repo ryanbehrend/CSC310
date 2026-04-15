@@ -64,7 +64,7 @@ binomialNode *BinomialHeap::mergeTrees(binomialNode *tree1, binomialNode *tree2)
 
 void BinomialHeap::linkTrees(binomialNode *&prev, binomialNode *&curr, binomialNode *&next)
 {
-    if (curr->degree != next->degree || next->sibling && next->sibling->degree == curr->degree)
+    if (curr->degree != next->degree || (next->sibling && next->sibling->degree == curr->degree))
     {
         prev = curr;
         curr = next;
@@ -167,7 +167,6 @@ int BinomialHeap::findMin()
         return -1;
     }
 
-    binomialNode *minNode = head;
     int minKey = head->key;
 
     binomialNode *temp = head->sibling;
@@ -175,7 +174,6 @@ int BinomialHeap::findMin()
     {
         if (temp->key < minKey)
         {
-            minNode = temp;
             minKey = temp->key;
         }
 
@@ -193,7 +191,6 @@ int BinomialHeap::deleteMin()
     }
 
     binomialNode *curr = head;
-    binomialNode *prev = nullptr;
     binomialNode *currMin = head;
     binomialNode *prevMin = nullptr;
 
@@ -204,7 +201,6 @@ int BinomialHeap::deleteMin()
             currMin = curr->sibling;
             prevMin = curr;
         }
-        prev = curr;
         curr = curr->sibling;
     }
 
