@@ -7,18 +7,18 @@ Then it enters a do-while loop and generates random numbers between 1-100, attem
 If the generated number is in the binomial heap, it will be deleted. Otherwise, it will generate a new number and try again.
 
 Finally, it enters another do-while loop and generates random numbers between 1-100, attempting to decrease them.
-To test, I just attempt to decrement each number by 1. If the generated number is not in the binomial heap, it will repeat and try again.
+To test, I attempt to decrement each number by 1. If the generated number is not in the binomial heap, it will repeat and try again.
 
 
 Task 6:
 - How do binomial heaps improve the efficiency of merge operations compared to binary heaps.
-Binomial heaps improve the efficiency of merge operations by combining trees of equal degree, reducing the time complexity to O(log n). This is much faster than binary heaps which merge by inserting one by one with a time complexity of O(n log n).
+Binomial heaps improve the efficiency of merge operations by combining trees of equal degree, reducing the time complexity to O(log n). This is much faster than binary heaps, which merge by inserting one-by-one, with a time complexity of O(n log n).
 
 - Explain the time complexity of various operations in binomial heaps.
-The worst case time complexity of all binomial heap operations is O(log n). However, the amortized time complexity is O(1) for insert and find-min, assuming it is optimized.
+The worst-case time complexity of all binomial heap operations is O(log n). However, the amortized time complexity is O(1) for insert and find-min, assuming it is optimized.
 
 - Why do we use the left-child right-sibling representation in binomial heaps instead of traditional tree structures? How does it help with efficiency?
-We use this representations because it simplifies the tree structure, making the linking of nodes simpler and more memory efficient. It allows trees to merge in O(1) time complexity for each link.
+We use this representation because it simplifies the tree structure, making the linking of nodes simpler and more memory efficient. It allows trees to merge in O(1) time complexity for each link.
 
 - What is your opinion on this? https://ieeexplore.ieee.org/abstract/document/7275881
-I think this could be a good idea. If using binomial heaps instead of RB trees has show to improve performance relating to scheduling on linux systems, I think that's a good thing. In my mind, scheduling is well suited for a heap structure as it pripritixed more critical tasks, meaning a binomial heap would be a good option.
+I think this could be a good idea. If using binomial heaps instead of RB trees has shown improved performance relating to scheduling on Linux systems, I think that's a good thing. In my mind, scheduling is well-suited for a heap structure as it prioritizes more critical tasks, meaning a binomial heap would be a good option.
