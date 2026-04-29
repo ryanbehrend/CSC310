@@ -242,18 +242,18 @@ int main(int argc, char *argv[])
             switch (choice)
             {
             case 1:
-                mySample.displayResearcher(mySample.indexArray[sCode], offset, fileStr);
+                mySample.displayResearcher(sCode, offset, fileStr);
                 break;
             case 2:
                 cout << "Enter a 20 char name to update record: ";
                 cin >> newName;
-                mySample.updateResearcher(mySample.indexArray[sCode], offset, newName, fileStr);
+                mySample.updateResearcher(sCode, offset, newName, fileStr);
                 break;
             case 3:
-                mySample.deleteSample(mySample.indexArray[sCode], offset, fileStr);
+                mySample.deleteSample(sCode, offset, fileStr);
                 break;
             case 4:
-                mySample.printSampleRange(mySample.indexArray[sCode], rangeStart, rangeEnd, fileStr);
+                mySample.printSampleRange(sCode, rangeStart, rangeEnd, fileStr);
                 break;
             case 0:
                 return 0;
