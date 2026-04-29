@@ -9,3 +9,5 @@ Finally, it prints out the last 20 samples from each species code
 Once this is done, you can dynamically modify the information by selecting a operation, a species code, then a sample
 
 When finished, type a 0 to quit
+
+The output screenshots show each section above. I then went through an example using Specicies code 3, offset 250. I printed it out to start and after each operation, changed the name, deleted it, and displayed a range of samples that included it
